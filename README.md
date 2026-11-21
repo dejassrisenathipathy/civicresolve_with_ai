@@ -219,3 +219,14 @@ The entire app was built by prompting the Antigravity agent:
 ## License
 
 MIT
+## Screenshots
+<img width="1311" height="902" alt="Screenshot 2026-11-21 160905" src="https://github.com/user-attachments/assets/02ca5347-36d8-4c3f-a852-ecf4eef214f9" />
+<img width="871" height="905" alt="Screenshot 2026-11-21 160925" src="https://github.com/user-attachments/assets/b1e6e795-68ac-493d-a33c-708d82e14238" />
+<img width="1122" height="913" alt="Screenshot 2026-11-21 161052" src="https://github.com/user-attachments/assets/0efb5940-0e93-4585-a1bb-66f4ae898b61" />
+<img width="840" height="702" alt="Screenshot 2026-11-21 161100" src="https://github.com/user-attachments/assets/4d0e044c-f5e5-4f14-901b-b9cbba47d1e3" />
+
+
+
+
+
+
