@@ -2,7 +2,7 @@
 
 **AI-powered citizen grievance reporting and resolution, built with Google Gemini and Firebase.**
 
-🔗 **Live app:** https://YOUR-APP.vercel.app  
+🔗 **Live app:** civicresolve-with-ai-2jzu.vercel.app  
 🏁 Built for **PromptWars × GDG On-Campus PSG iTech** using **Google Antigravity** and **Gemini**.
 
 ---
