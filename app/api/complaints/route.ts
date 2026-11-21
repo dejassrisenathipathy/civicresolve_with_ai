@@ -118,3 +118,4 @@ export async function POST(request: Request): Promise<NextResponse> {
     { status: 201 }
   );
 }
+export const maxDuration = 60;
