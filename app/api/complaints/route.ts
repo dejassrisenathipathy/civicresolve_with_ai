@@ -8,8 +8,9 @@ import { classifyComplaint } from '@/lib/ai/classify';
 
 /**
  * POST /api/complaints
- * Creates a new citizen complaint, validates payload with Zod, applies rate limits,
- * saves photos separately to complaintImages, and returns the complaint ID & tracking code.
+ * Creates a new citizen complaint, validates with Zod, enforces rate limiting,
+ * securely saves the photo to complaintImages, classifies the complaint via Gemini AI,
+ * and updates the complaint document with structured AI triage metadata.
  */
 export async function POST(request: Request): Promise<NextResponse> {
   // 1. Authenticate user via Firebase ID token
@@ -51,10 +52,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   const complaintId = complaintDocRef.id;
   const trackingCode = generateTrackingCode();
 
-  // 4. Run AI classification pipeline (returns null for now)
-  const aiResult = await classifyComplaint(data.title, data.description);
-
-  // 5. If a photo was supplied, store it in the separate complaintImages collection
+  // 4. If a photo was supplied, store it in the separate complaintImages collection
   const hasImage = Boolean(data.photo);
   if (data.photo) {
     await adminDb.collection('complaintImages').doc(complaintId).set({
@@ -66,7 +64,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
   }
 
-  // 6. Build the Complaint document (photo is NEVER stored here)
+  // 5. Build and save the initial Complaint document with ai: null
   const complaint: Complaint = {
     id: complaintId,
     trackingCode,
@@ -77,7 +75,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     hasImage,
     reporterUid: user.uid,
     status: 'reported',
-    ai: aiResult,
+    ai: null,
     adminOverride: null,
     statusHistory: [
       {
@@ -92,6 +90,25 @@ export async function POST(request: Request): Promise<NextResponse> {
   };
 
   await complaintDocRef.set(complaint);
+
+  // 6. Run AI classification after saving, then update the complaint's ai field
+  try {
+    const aiAnalysis = await classifyComplaint({
+      id: complaintId,
+      title: data.title,
+      description: data.description,
+      address: data.location.address,
+      userCategory: data.userCategory,
+      imageBase64: data.photo?.data,
+    });
+
+    await complaintDocRef.update({
+      ai: aiAnalysis,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('AI classification update error for id:', complaintId, err);
+  }
 
   return NextResponse.json(
     {
